@@ -93,6 +93,7 @@
                                 }
                             };
 
+                        // for binding variables set listener ng-bind
                         if('binding' in scope) {
                             scope.$watch('binding', function() {
                                 setMarker(tag);
@@ -100,6 +101,11 @@
                         } else {
                             setMarker(tag);
                         }
+
+                        // listener for changes subtree element
+                        element.on('DOMSubtreeModified', function() {
+                            setMarker(tag);
+                        });
 
                     }
                 }
