@@ -4,7 +4,7 @@ ngRender
 Angular ngRender directive
 
 
-### Installing
+## Installing
 
 You can install the library via [Bower](http://bower.io/):
 
@@ -18,7 +18,7 @@ Add a `<script>` to your html:
 <script src="bower_components/angular-render/angular-render.js"></script>
 ```
 
-### Usage
+## Usage
 
 ```js
 // add 'ngRender' as dependency to your module
@@ -31,8 +31,8 @@ You can add the `ng-render` directive in tags:
 <div ng-render="someFunction()">...</div>
 ````
 
-### Event
+## Event
 
-## $nodesDOMRendered
+### $nodesDOMRendered
 
 Emitted every time the element(node) is rendered.
