@@ -30,3 +30,9 @@ You can add the `ng-render` directive in tags:
 <div ng-render></div>
 <div ng-render="someFunction()">...</div>
 ````
+
+### Event
+
+## $nodesDOMRendered
+
+Emitted every time the element(node) is rendered.
