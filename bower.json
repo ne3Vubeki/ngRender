@@ -1,5 +1,5 @@
 {
-    "name": "ngRender",
+    "name": "angular-render",
     "version": "1.0.0",
     "homepage": "https://github.com/ne3Vubeki/ngRender",
     "authors": [
@@ -9,6 +9,7 @@
     "main": "angular-render.js",
     "keywords": [
         "angular",
+        "angular-render",
         "ngRender",
         "ng-render",
         "directive"
