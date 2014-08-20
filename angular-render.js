@@ -102,11 +102,6 @@
                             setMarker(tag);
                         }
 
-                        // listener for changes subtree element
-                        element.on('DOMSubtreeModified', function() {
-                            setMarker(tag);
-                        });
-
                     }
                 }
             }
