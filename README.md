@@ -31,6 +31,11 @@ You can add the `ng-render` directive in tags:
 <div ng-render="someFunction()">...</div>
 ````
 
+Added attribute `ng-render-inside` for check elements inside subtree node:
+```html
+<div ng-render ng-render-inside></div>
+````
+
 ## Event
 
 ### $nodesDOMRendered

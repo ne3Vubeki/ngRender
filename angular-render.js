@@ -50,9 +50,8 @@
                             $route.current.locals.$template = foreach(dom);
                         }
 
-                        // if there is a ngRepeat set nr - directive
-/*
-                        if(typeof attrs.ngRepeat !== 'undefined') {
+                        // if there is a ng-render-inside attribute check subtree
+                        if(typeof attrs.ngRenderInside !== 'undefined') {
                             var img = element.find('img', 'iframe', 'frame', 'frameset', 'script', 'link', 'style');
                             if(img.length) {
                                 angular.forEach(img, function(data) {
@@ -63,7 +62,6 @@
                                 });
                             }
                         }
-*/
 
                     },
                     post: function(scope, element, attrs) {
