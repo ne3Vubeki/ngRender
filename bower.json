@@ -1,0 +1,23 @@
+{
+    "name": "ngRender",
+    "version": "1.0.0",
+    "homepage": "https://github.com/ne3Vubeki/ngRender",
+    "authors": [
+        "Vitaly Maltsev <freshbook@mail.ru>"
+    ],
+    "description": "Angular ngRender directive",
+    "main": "angular-render.js",
+    "keywords": [
+        "angular",
+        "ngRender",
+        "ng-render",
+        "directive"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*"
+    ],
+    "dependencies": {
+        "angular": "~1.2.18"
+    }
+}
