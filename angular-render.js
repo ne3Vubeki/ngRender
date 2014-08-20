@@ -20,7 +20,7 @@
         return {
             restrict: 'A',
             scope: {
-                loading: '&?ngRender',
+                rendering: '&?ngRender',
                 binding: '=?ngBind'
             },
             compile: function() {
@@ -50,9 +50,10 @@
                             $route.current.locals.$template = foreach(dom);
                         }
 
-                        // if there is a ngRepeat
+                        // if there is a ngRepeat set nr - directive
+/*
                         if(typeof attrs.ngRepeat !== 'undefined') {
-                            var img = element.find('img');
+                            var img = element.find('img', 'iframe', 'frame', 'frameset', 'script', 'link', 'style');
                             if(img.length) {
                                 angular.forEach(img, function(data) {
                                     var elem = angular.element(data);
@@ -62,6 +63,7 @@
                                 });
                             }
                         }
+*/
 
                     },
                     post: function(scope, element, attrs) {
@@ -72,7 +74,7 @@
                          */
                         function setMarker(element) {
 
-                            var img = '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" nr>',
+                            var img = '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" nr="false">',
                                 tag = element[0].tagName;
                             switch (tag) {
                                 // elements with event onload
@@ -83,7 +85,7 @@
                                 case 'FRAME':
                                 case 'FRAMESET':
                                 case 'IFRAME':
-                                    element[0].setAttribute('nr', '');
+                                    $compile(element.attr('nr', element.attr('ng-render')).removeAttr('ng-render'))(scope);
                                     break;
 
                                 // consisting of a single element
@@ -135,10 +137,16 @@
             link: function(scope, element, attrs) {
                 _itemsLength += 1;
                 element.on('load', function() {
-                    this.parentNode.removeChild(this);
+                    if(attrs.nr === 'false') {
+                        this.parentNode.removeChild(this);
+                    } else {
+                        this.removeAttribute('nr');
+                    }
                     $timeout( function() {
                         _itemsLength -= 1;
-                        scope.loading();
+                        if('rendering' in scope) {
+                            scope.rendering();
+                        }
                         if(!_itemsLength) {
                             scope.$emit('$nodesDOMRendered');
                         }
