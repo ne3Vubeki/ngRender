@@ -38,7 +38,7 @@
                                         } else {
                                             if(data.outerHTML) {
                                                 var elem = angular.element(data);
-                                                if(!elem.attr('ng-render') || !elem.attr('data-ng-render')) {
+                                                if(!elem.attr('ng-render')) {
                                                     data.setAttribute('ng-render', '');
                                                 }
                                                 str += data.outerHTML;
@@ -48,6 +48,19 @@
                                     return str;
                                 };
                             $route.current.locals.$template = foreach(dom);
+                        }
+
+                        // if there is a ngRepeat
+                        if(typeof attrs.ngRepeat !== 'undefined') {
+                            var img = element.find('img');
+                            if(img.length) {
+                                angular.forEach(img, function(data) {
+                                    var elem = angular.element(data);
+                                    if(!elem.attr('ng-render')) {
+                                        $compile(elem.attr('ng-render', ''))(scope);
+                                    }
+                                });
+                            }
                         }
 
                     },
@@ -98,35 +111,11 @@
 
                         }
 
-                        /**
-                         * function to pass subtree node
-                         * @param nodes
-                         */
-                        function foreachMarker(nodes) {
-                            angular.forEach(nodes, function(elem) {
-                                if(elem.childElementCount) {
-                                    foreachMarker(elem.children);
-                                } else {
-                                    if(elem.outerHTML) {
-                                        var e = angular.element(elem);
-                                        if(!e.attr('ng-render') || !e.attr('data-ng-render')) {
-                                            // for binding variables set listener ng-bind
-                                            if('binding' in scope) {
-                                                scope.$watch('binding', function() {
-                                                    setMarker(element);
-                                                });
-                                            } else {
-                                                setMarker(element);
-                                            }
-                                        }
-                                    }
-                                }
+                        // for binding variables set listener ng-bind
+                        if('binding' in scope) {
+                            scope.$watch('binding', function() {
+                                setMarker(element);
                             });
-                        }
-
-                        // setting markers for nodes or elements
-                        if(element[0].childElementCount) {
-                            foreachMarker(element)
                         } else {
                             setMarker(element);
                         }
