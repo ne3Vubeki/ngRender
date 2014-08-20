@@ -6,13 +6,13 @@ Angular ngRender directive
 
 ### Installing
 
-Install via `bower`
+You can install the library via [Bower](http://bower.io/):
 
 ```sh
 bower install angular-render --save
 ```
 
-Add a `<script>` to your html
+Add a `<script>` to your html:
 
 ```html
 <script src="bower_components/angular-render/angular-render.js"></script>
@@ -25,7 +25,7 @@ Add a `<script>` to your html
 var yourModule = angular.module("yourModule", ['ngRender']);
 ```
 
-You can add the `ng-render` directive in tags
+You can add the `ng-render` directive in tags:
 ```html
 <div ng-render></div>
 <div ng-render="someFunction()">...</div>
