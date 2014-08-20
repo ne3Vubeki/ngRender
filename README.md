@@ -33,7 +33,7 @@ You can add the `ng-render` directive in tags:
 
 Added attribute `ng-render-inside` for check elements inside subtree node:
 ```html
-<div ng-render ng-render-inside></div>
+<div ng-render ng-render-inside>...</div>
 ````
 
 ## Event
