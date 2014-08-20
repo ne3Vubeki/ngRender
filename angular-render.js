@@ -53,53 +53,81 @@
                     },
                     post: function(scope, element, attrs) {
 
-                        var img = '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" nr>',
-                            tag = element[0].tagName,
-                            elementLength = element[0].children.length,
-                            setMarker = function(tag) {
-                                switch (tag) {
-                                    // elements with event onload
-                                    case 'IMG':
-                                    case 'LINK':
-                                    case 'SCRIPT':
-                                    case 'STYLE':
-                                    case 'FRAME':
-                                    case 'FRAMESET':
-                                    case 'IFRAME':
-                                        element[0].setAttribute('nr', '');
-                                        break;
+                        /**
+                         * installer markers
+                         * @param element
+                         */
+                        function setMarker(element) {
 
-                                    // consisting of a single element
-                                    case 'AREA':
-                                    case 'BASE':
-                                    case 'COL':
-                                    case 'COMMAND':
-                                    case 'PARAM':
-                                    case 'SOURCE':
-                                    case 'TRACK':
-                                    case 'META':
-                                    case 'WBR':
-                                    case 'HR':
-                                    case 'BR':
-                                    case 'INPUT':
-                                    case 'TEXTAREA':
-                                        element.after($compile(img)(scope));
-                                        break;
+                            var img = '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" nr>',
+                                tag = element[0].tagName;
+                            switch (tag) {
+                                // elements with event onload
+                                case 'IMG':
+                                case 'LINK':
+                                case 'SCRIPT':
+                                case 'STYLE':
+                                case 'FRAME':
+                                case 'FRAMESET':
+                                case 'IFRAME':
+                                    element[0].setAttribute('nr', '');
+                                    break;
 
-                                    // other elements
-                                    default:
-                                        element.append($compile(img)(scope));
-                                        break;
+                                // consisting of a single element
+                                case 'AREA':
+                                case 'BASE':
+                                case 'COL':
+                                case 'COMMAND':
+                                case 'PARAM':
+                                case 'SOURCE':
+                                case 'TRACK':
+                                case 'META':
+                                case 'WBR':
+                                case 'HR':
+                                case 'BR':
+                                case 'INPUT':
+                                case 'TEXTAREA':
+                                    element.after($compile(img)(scope));
+                                    break;
+
+                                // other elements
+                                default:
+                                    element.append($compile(img)(scope));
+                                    break;
+                            }
+
+                        }
+
+                        /**
+                         * function to pass subtree node
+                         * @param nodes
+                         */
+                        function foreachMarker(nodes) {
+                            angular.forEach(nodes, function(elem) {
+                                if(elem.childElementCount) {
+                                    foreachMarker(elem.children);
+                                } else {
+                                    if(elem.outerHTML) {
+                                        var e = angular.element(elem);
+                                        if(!e.attr('ng-render') || !e.attr('data-ng-render')) {
+                                            setMarker(e);
+                                        }
+                                    }
                                 }
-                            };
+                            });
+                        }
 
                         // for binding variables set listener ng-bind
                         if('binding' in scope) {
                             scope.$watch('binding', function() {
-                                setMarker(tag);
+                                setMarker(element);
                             });
                         } else {
-                            setMarker(tag);
+                            if(element[0].childElementCount) {
+                                foreachMarker(element)
+                            } else {
+                                setMarker(element);
+                            }
                         }
 
                     }
