@@ -110,24 +110,25 @@
                                     if(elem.outerHTML) {
                                         var e = angular.element(elem);
                                         if(!e.attr('ng-render') || !e.attr('data-ng-render')) {
-                                            setMarker(e);
+                                            // for binding variables set listener ng-bind
+                                            if('binding' in scope) {
+                                                scope.$watch('binding', function() {
+                                                    setMarker(element);
+                                                });
+                                            } else {
+                                                setMarker(element);
+                                            }
                                         }
                                     }
                                 }
                             });
                         }
 
-                        // for binding variables set listener ng-bind
-                        if('binding' in scope) {
-                            scope.$watch('binding', function() {
-                                setMarker(element);
-                            });
+                        // setting markers for nodes or elements
+                        if(element[0].childElementCount) {
+                            foreachMarker(element)
                         } else {
-                            if(element[0].childElementCount) {
-                                foreachMarker(element)
-                            } else {
-                                setMarker(element);
-                            }
+                            setMarker(element);
                         }
 
                     }
