@@ -1,5 +1,5 @@
 /**
- * angular-render 1.0.0
+ * angular-render 1.0.1
  * https://github.com/ne3Vubeki/ngRender
  * @author Vitaly Maltsev
  * @license MIT License http://opensource.org/licenses/MIT
@@ -22,8 +22,7 @@
             restrict: 'A',
             scope: {
                 rendering: '&?ngRender',
-                binding: '=?ngBind',
-                include: '=?ngInclude'
+                binding: '=?ngBind'
             },
             require: '^?ngInclude',
             controller: angular.noop,
@@ -31,63 +30,55 @@
                 return {
                     pre: function(scope, element, attrs, ctrl) {
 
+                        /**
+                         * installer markers for HTML string
+                         * @param str
+                         * @returns {string}
+                         */
                         function setMarkerStr(str) {
                             var node = document.createElement('div'),
                                 nodes_include,
                                 forEach = function() {
-                                    for(var i = 0, nodeLength = node.children.length; i < nodeLength; i++) {
+                                    for(var i = 0, node_length = node.children.length; i < node_length; i++) {
                                         if(node.children[i].childElementCount) {
                                             foreach(node.children[i]);
                                         } else {
                                             if (!node.children[i].hasAttribute('ng-render')) {
-                                                node.children[i].setAttribute('ng-render', '');
+                                                node.children[i].setAttribute('ng-render', 'false');
                                             }
                                         }
                                     }
                                 };
+
                             node.innerHTML = str;
-                            nodes_include = node.getElementsByTagName('NG-INCLUDE') || node.getAttributeNode('ng-include') || node.getElementsByClassName('ng-include');
+                            // check ng-inclide directive in tenplate
+                            nodes_include = node.querySelectorAll('[ng-include]').length ? node.querySelectorAll('[ng-include]') :
+                                (node.getElementsByTagName('NG-INCLUDE').length ? node.getElementsByTagName('NG-INCLUDE') :
+                                 node.getElementsByClassName('ng-include'));
                             if(nodes_include.length) {
-                                for(var i in nodes_include) {
-                                    if(nodes_include[i].hasOwnProperty(i)) {
-                                        if (!nodes_include[i].hasAttribute('ng-render')) {
-                                            nodes_include[i].setAttribute('ng-render', '');
-                                        }
+                                // with ng-include
+                                for(var i = 0, nodes_include_length = nodes_include.length; i < nodes_include_length; i++) {
+                                    if (!nodes_include[i].hasAttribute('ng-render')) {
+                                        nodes_include[i].setAttribute('ng-render', 'false');
                                     }
                                 }
                             } else {
+                                // without ng-include
                                 forEach()
                             }
+
                             return node.innerHTML;
                         }
 
                         // if there is a ngView
-                        if(typeof attrs.ngView !== 'undefined') {
+                        if(attrs.ngView) {
                             $route.current.locals.$template = setMarkerStr($route.current.locals.$template);
                         }
 
-                        if(scope.include) {
+                        // if is a ngInclude
+                        if(attrs.ngInclude) {
                             if(typeof ctrl.template !== 'undefined') {
                                 ctrl.template = setMarkerStr(ctrl.template);
-
-/*
-                                dom = angular.element(ctrl.template);
-                                dom = angular.forEach(dom, function(elem) {
-                                    if (elem.outerHTML) {
-                                        if( elem.hasAttribute('ng-include') ||
-                                            elem.nodeName ==='NG-INCLUDE' ||
-                                            elem.className.search('ng-include') > 0) {
-
-                                            if (!elem.hasAttribute('ng-render')) {
-                                                elem.setAttribute('ng-render', '');
-                                            }
-
-                                        }
-                                    }
-                                });
-                                ctrl.template = dom.parent()[0].innerHTML;
-*/
-
                             }
                         }
 
@@ -98,7 +89,7 @@
                                 angular.forEach(img, function(data) {
                                     var elem = angular.element(data);
                                     if(!elem.attr('ng-render')) {
-                                        $compile(elem.attr('ng-render', ''))(scope);
+                                        $compile(elem.attr('ng-render', 'false'))(scope);
                                     }
                                 });
                             }
@@ -108,10 +99,10 @@
                     post: function(scope, element, attrs) {
 
                         /**
-                         * installer markers
+                         * installer markers for HTML
                          * @param element
                          */
-                        function setMarker(element) {
+                        function setMarker() {
 
                             var img = '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" nr="false">',
                                 tag = element[0].tagName;
@@ -124,7 +115,7 @@
                                 case 'FRAME':
                                 case 'FRAMESET':
                                 case 'IFRAME':
-                                    $compile(element.attr('nr', element.attr('ng-render')).removeAttr('ng-render'))(scope);
+                                    $compile(element.attr('nr'))(scope);
                                     break;
 
                                 // consisting of a single element
@@ -150,15 +141,20 @@
                                     break;
                             }
 
+                            // removes temporary attributes
+                            if(attrs.ngRender === 'false') {
+                                element.removeAttr('ng-render');
+                            }
+
                         }
 
                         // for binding variables set listener ng-bind
                         if('binding' in scope) {
                             scope.$watch('binding', function() {
-                                setMarker(element);
+                                setMarker();
                             });
                         } else {
-                            setMarker(element);
+                            setMarker();
                         }
 
                     }
