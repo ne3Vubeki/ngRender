@@ -16,41 +16,82 @@
     .directive('ngRender', [
         '$compile',
         '$route',
-        function($compile, $route) {
+        '$templateCache',
+        function($compile, $route, $templateCache) {
         return {
             restrict: 'A',
             scope: {
                 rendering: '&?ngRender',
-                binding: '=?ngBind'
+                binding: '=?ngBind',
+                include: '=?ngInclude'
             },
+            require: '^?ngInclude',
+            controller: angular.noop,
             compile: function() {
                 return {
-                    pre: function(scope, element, attrs) {
+                    pre: function(scope, element, attrs, ctrl) {
+
+                        function setMarkerStr(str) {
+                            var node = document.createElement('div'),
+                                nodes_include,
+                                forEach = function() {
+                                    for(var i = 0, nodeLength = node.children.length; i < nodeLength; i++) {
+                                        if(node.children[i].childElementCount) {
+                                            foreach(node.children[i]);
+                                        } else {
+                                            if (!node.children[i].hasAttribute('ng-render')) {
+                                                node.children[i].setAttribute('ng-render', '');
+                                            }
+                                        }
+                                    }
+                                };
+                            node.innerHTML = str;
+                            nodes_include = node.getElementsByTagName('NG-INCLUDE') || node.getAttributeNode('ng-include') || node.getElementsByClassName('ng-include');
+                            if(nodes_include.length) {
+                                for(var i in nodes_include) {
+                                    if(nodes_include[i].hasOwnProperty(i)) {
+                                        if (!nodes_include[i].hasAttribute('ng-render')) {
+                                            nodes_include[i].setAttribute('ng-render', '');
+                                        }
+                                    }
+                                }
+                            } else {
+                                forEach()
+                            }
+                            return node.innerHTML;
+                        }
 
                         // if there is a ngView
                         if(typeof attrs.ngView !== 'undefined') {
-                            var dom = angular.element($route.current.locals.$template),
-                                foreach = function(dom) {
-                                    var str = '';
-                                    angular.forEach(dom, function(data) {
-                                        if(data.childElementCount > 1) {
-                                            str += data.outerHTML.replace(data.innerHTML, foreach(data.children));
-                                        } else {
-                                            if(data.outerHTML) {
-                                                var elem = angular.element(data);
-                                                if(!elem.attr('ng-render')) {
-                                                    data.setAttribute('ng-render', '');
-                                                }
-                                                str += data.outerHTML;
-                                            }
-                                        }
-                                    });
-                                    return str;
-                                };
-                            $route.current.locals.$template = foreach(dom);
+                            $route.current.locals.$template = setMarkerStr($route.current.locals.$template);
                         }
 
-                        // if there is a ng-render-inside attribute check subtree
+                        if(scope.include) {
+                            if(typeof ctrl.template !== 'undefined') {
+                                ctrl.template = setMarkerStr(ctrl.template);
+
+/*
+                                dom = angular.element(ctrl.template);
+                                dom = angular.forEach(dom, function(elem) {
+                                    if (elem.outerHTML) {
+                                        if( elem.hasAttribute('ng-include') ||
+                                            elem.nodeName ==='NG-INCLUDE' ||
+                                            elem.className.search('ng-include') > 0) {
+
+                                            if (!elem.hasAttribute('ng-render')) {
+                                                elem.setAttribute('ng-render', '');
+                                            }
+
+                                        }
+                                    }
+                                });
+                                ctrl.template = dom.parent()[0].innerHTML;
+*/
+
+                            }
+                        }
+
+                        // if there is a ng-render-inside attribute check subtree item
                         if(typeof attrs.ngRenderInside !== 'undefined') {
                             var img = element.find('img', 'iframe', 'frame', 'frameset', 'script', 'link', 'style');
                             if(img.length) {
