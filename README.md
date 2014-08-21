@@ -47,3 +47,7 @@ Emitted every time the element(node) is rendered.
 This library defines the event closure rendering element. Inserted into the cell in the form of attribute `ng-render`. 
 For `ng-view` bypasses the whole subtree and sets the time attributes that are finished `ng-render` deleted. 
 For `ng-include` can set markers on all invested in this item `ng-include`. 
+
+### Demo
+
+[Demo](http://plnkr.co/edit/ARC3kU)
