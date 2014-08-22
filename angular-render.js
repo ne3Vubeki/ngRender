@@ -22,7 +22,9 @@
             restrict: 'A',
             scope: {
                 rendering: '&?ngRender',
-                binding: '=?ngBind'
+                ngBind: '=?ngBind',
+                ngBindHtml: '=?ngBindHtml',
+                ngBindTemplate: '@?ngBindTemplate'
             },
             require: '^?ngInclude',
             controller: angular.noop,
@@ -98,6 +100,8 @@
                     },
                     post: function(scope, element, attrs) {
 
+                        var binding = '';
+
                         /**
                          * installer markers for HTML
                          * @param element
@@ -148,9 +152,18 @@
 
                         }
 
-                        // for binding variables set listener ng-bind
-                        if('binding' in scope) {
-                            scope.$watch('binding', function() {
+                        // for binding variables set listener ng-bind, ng-bind-html, ng-bind-template
+                        if(scope.ngBind) {
+                            binding = 'ngBind';
+                        }
+                        if(scope.ngBindHtml) {
+                            binding = 'ngBindHtml';
+                        }
+                        if(scope.ngBindTemplate) {
+                            binding = 'ngBindTemplate';
+                        }
+                        if(binding) {
+                            scope.$watch(binding, function() {
                                 setMarker();
                             });
                         } else {

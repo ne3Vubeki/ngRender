@@ -51,3 +51,10 @@ For `ng-include` can set markers on all invested in this item `ng-include`.
 ### Demo
 
 [Demo](http://plnkr.co/edit/ARC3kU)
+
+## Changelog
+
+### 1.0.1
+<ul>
+	<li>Added handling `ng-bind-html` and `ng-bind-templat`</li>
+</ul>
